@@ -22,7 +22,7 @@ def coder0(wavin, h, M, N):
     num_of_frames = int(np.ceil(len(wavin)/frame_size))
 
     # Pad with zeros
-    data_pad = np.pad(wavin, (0,(len(wavin)+L-M) % frame_size), 'constant')
+    data_pad = np.pad(wavin, ((len(wavin)+L-M) % frame_size,0), 'constant')
 
     # For each frame, read points from the file
     for f in range(num_of_frames):
@@ -35,7 +35,7 @@ def coder0(wavin, h, M, N):
         # STEP (c)
         Yc = nothing.donothing(Y)
 
-        # Step (d)5*7
+        # Step (d)5
         Ytot.append(Yc)
     
     # Return a list of frames. Each list is a 2D numpy array
