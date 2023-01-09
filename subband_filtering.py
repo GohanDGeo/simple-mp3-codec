@@ -71,8 +71,7 @@ def coder0(wavin, h, M, N):
     # For each frame, read points from the file
     for f in range(num_of_frames):
 
-        #buffer = np.roll(buffer, -(L-M))
-        buffer = np.flip(buffer)
+        buffer = np.roll(buffer, -(L-M))
         buffer[L-M:] = data_pad[f*frame_size:(f+1)*frame_size]
         # STEP (b)
         Y = frame.frame_sub_analysis(buffer, H, N)
@@ -101,7 +100,7 @@ def decoder0(Ytot, h, M, N):
 
         # STEP (e)
         Yh = nothing.idonothing(Yc)
-        buffer = np.flip(buffer, 0)#np.roll(buffer, -int(-1 + L/M),axis=0)
+        buffer = np.roll(buffer, -int(-1 + L/M),axis=0)
         buffer[int(-1 + L/M):, :] = Yh
 
         # STEP (f)
