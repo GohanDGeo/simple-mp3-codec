@@ -36,6 +36,7 @@ fig1.show()
 
 samplerate, wavin = wavfile.read("scripts and data//myfile.wav")
 
+wavin = np.array(wavin, dtype=float)
 xhat, Ytot = codec0(wavin, h, M, N)
 
 
