@@ -22,13 +22,17 @@ def coder0(wavin, h, M, N):
     num_of_frames = int(np.ceil(len(wavin)/frame_size))
 
     # Pad with zeros
-    data_pad = np.pad(wavin, ((len(wavin)+L-M) % frame_size,0), 'constant')
+    data_pad = np.pad(wavin, (0,len(wavin) % frame_size), 'constant')
 
+    buffer = np.zeros((N-1)*M + L)
+    print(buffer.shape)
+    i = 0
+    buffer[L-M:] = data_pad[:frame_size]
     # For each frame, read points from the file
-    for f in range(num_of_frames):
+    for f in range(1, num_of_frames):
 
-        buffer = data_pad[f*frame_size:(f+1)*frame_size + L - M]
-
+        buffer = np.roll(buffer, -(M*N))
+        buffer[L-M:] = data_pad[f*frame_size:(f+1)*frame_size]
         # STEP (b)
         Y = frame.frame_sub_analysis(buffer, H, N)
         
@@ -37,6 +41,9 @@ def coder0(wavin, h, M, N):
 
         # Step (d)5
         Ytot.append(Yc)
+        i += 1
+        #if i==2:
+         #   break
     
     # Return a list of frames. Each list is a 2D numpy array
     return Ytot
@@ -44,20 +51,25 @@ def coder0(wavin, h, M, N):
 def decoder0(Ytot, h, M, N):
     
     G  = mp3.make_mp3_synthesisfb(h, M)
-    
-    xhat = []
+    L = G.shape[0]
 
+    xhat = []
+    size = int(np.ceil(N-1 + L/M))
+    buffer = np.zeros((size, M))#InputBuffer2D(int(np.ceil(N-1 + L/M)), M)
     for Yc in Ytot:
 
         # STEP (e)
         Yh = nothing.idonothing(Yc)
-        
+        buffer = np.roll(buffer, -N,axis=0)
+        buffer[int(-1 + L/M):, :] = Yh
+
         # STEP (f)
-        z = frame.frame_sub_synthesis(Yh,G)
+        z = frame.frame_sub_synthesis(buffer,G)
 
         xhat.append(z)
 
-    xhat = np.asarray(xhat).flatten()
+    print(np.asarray(xhat).shape)
+    xhat = np.asarray(xhat).ravel()
 
     return xhat
 
