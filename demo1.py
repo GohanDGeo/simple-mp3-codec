@@ -40,8 +40,11 @@ wavin = np.array(wavin, dtype=float)
 xhat, Ytot = codec0(wavin, h, M, N)
 wavfile.write("xhat.wav", samplerate, np.int16(xhat))
 print(len(xhat))
-#snr = wavin/(wavin-xhat)
-#print(f"SNR {snr}")
+signal = np.mean(wavin**2)
+noise = np.mean((wavin-xhat)**2)
+
+snr = 10*np.log10(signal/noise)
+print(f"SNR {snr}")
 
 plt.plot(xhat)
 
