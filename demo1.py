@@ -38,13 +38,14 @@ samplerate, wavin = wavfile.read("scripts and data//myfile.wav")
 
 wavin = np.array(wavin, dtype=float)
 xhat, Ytot = codec0(wavin, h, M, N)
-
-
 wavfile.write("xhat.wav", samplerate, np.int16(xhat))
-
+print(len(xhat))
+#snr = wavin/(wavin-xhat)
+#print(f"SNR {snr}")
 
 plt.plot(xhat)
-plt.figure()
 
+plt.figure()
 plt.plot(wavin)
 plt.show()
+
