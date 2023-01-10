@@ -7,6 +7,7 @@ sys.path.insert(1, 'scripts and data')
 import mp3
 import frame
 import nothing
+
 from subband_filtering import coder0, decoder0, codec0
 
 h = np.load("scripts and data//h.npy", allow_pickle=True).tolist()['h'].reshape(-1, )
@@ -41,8 +42,10 @@ samplerate, wavin = wavfile.read("scripts and data//myfile.wav")
 xhat, Ytot = codec0(wavin, h, M, N)
 
 
-wavfile.write("xhat.wav", samplerate, xhat)
+wavfile.write("xhat.wav", samplerate, np.int16(xhat))
 
+plt.plot(wavin - xhat)
+plt.figure()
 
 plt.plot(xhat)
 plt.figure()
