@@ -22,7 +22,7 @@ def coder0(wavin, h, M, N):
     num_of_frames = int(np.ceil(len(wavin)/frame_size))
 
     # Pad with zeros
-    data_pad = np.pad(wavin, (0,frame_size - len(wavin) % frame_size), 'constant')
+    data_pad = np.pad(wavin, (0, frame_size*num_of_frames - len(wavin)), 'constant')
     buffer = np.zeros((N-1)*M + L)
     
     # For each frame, read points from the file
