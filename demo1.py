@@ -22,15 +22,15 @@ freqaxis = np.linspace(-fs/2, fs/2, fft_size)
 # Plotting the amplitude spectrum of the filterbank vs frequency
 fft = np.fft.fft(H, axis=0)
 filterbank_amp_spectrum = 10 * np.log10( np.abs(fft) **2)
-fig = plt.figure()
-plt.plot(freqaxis, filterbank_amp_spectrum)
-fig.show()
+#fig = plt.figure()
+#plt.plot(freqaxis, filterbank_amp_spectrum)
+#fig.show()
 
 # Plotting the amplitude spectrum of the filterbank vs barks
-fig1 = plt.figure()
+#fig1 = plt.figure()
 zaxis = 13*np.arctan(0.00076*freqaxis) + 3.5*np.arctan((freqaxis/7500)**2)
-plt.plot(zaxis, filterbank_amp_spectrum)
-fig1.show()
+#plt.plot(zaxis, filterbank_amp_spectrum)
+#fig1.show()
 
 #plt.show()
 
@@ -40,19 +40,18 @@ wavin = np.array(wavin, dtype=float)
 xhat, Ytot = codec0(wavin, h, M, N)
 wavfile.write("xhat.wav", samplerate, np.int16(xhat))
 #print(len(xhat))
+wavin = np.int16(wavin)
 xhat = np.int16(xhat)
 # signal = np.mean(wavin**2)
 # noise = np.mean((wavin-xhat)**2)
 
 # snr = 10*np.log10(signal/noise)
 # print(f"SNR {snr}")
+shift = 480
+wavin1 = np.copy(xhat[:-shift])
+xhat1 = np.copy(wavin[shift:])
 
 plt.figure()
-plt.plot(wavin[480:])
-plt.plot(xhat[0:-480])
-
-plt.plot(xhat[0:-480] - wavin[480:])
-plt.figure()
-plt.plot(wavin)
+plt.plot(xhat1 - wavin1)
 plt.show()
 

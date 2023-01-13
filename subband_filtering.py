@@ -23,7 +23,6 @@ def coder0(wavin, h, M, N):
 
     # Pad with zeros
     data_pad = np.pad(wavin, (0, frame_size*num_of_frames - len(wavin) + L - M), 'constant')
-    print(len(wavin) - len(data_pad))
     buffer = np.zeros((N-1)*M + L)
     
     # For each frame, read points from the file
@@ -60,10 +59,9 @@ def decoder0(Ytot, h, M, N):
     
     Yhtot = np.vstack(Yhtot)
     Yhtot = np.pad(Yhtot, ((0,int(L/M - 1)), (0,0)), 'constant')
-
     for f in range(len(Ytot)):
-        buffer = Yhtot[f*N:(f+1)*N + int(L/M - 1)]
-        #print(Yhtot[f*N:(f+1)*N + int(L/M - 1)].shape)
+        buffer = Yhtot[f*N:(f+1)*N + int(L/M - 1), :]
+
         # STEP (f)
         z = frame.frame_sub_synthesis(buffer,G)
 
