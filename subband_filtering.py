@@ -58,9 +58,9 @@ def decoder0(Ytot, h, M, N):
         Yhtot.append(Yh)
     
     Yhtot = np.vstack(Yhtot)
-    Yhtot = np.pad(Yhtot, ((0,int(L/M - 1)), (0,0)), 'constant')
+    Yhtot = np.pad(Yhtot, ((0,int(L/M)), (0,0)), 'constant')
     for f in range(len(Ytot)):
-        buffer = Yhtot[f*N:(f+1)*N + int(L/M - 1), :]
+        buffer = Yhtot[f*N:(f+1)*N + int(L/M), :]
 
         # STEP (f)
         z = frame.frame_sub_synthesis(buffer,G)
