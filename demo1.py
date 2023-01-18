@@ -57,11 +57,8 @@ ax.set_ylim([np.min(wavin_shifted), np.max(wavin_shifted)])
 signal = np.mean(np.float64(wavin_shifted)**2)
 noise = np.mean(np.float64(wavin_shifted-xhat_shifted)**2)
 
-try:
-    snr = 10*np.log10(signal/noise)
-    print(f"SNR {snr}")
-except:
-    print("SNR is infinite, thus noise is close to 0")
+snr = 10*np.log10(signal/noise)
+print(f"SNR {snr}")
 
 plt.show()
 
