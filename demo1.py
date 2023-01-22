@@ -1,12 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.io import wavfile
-#from scipy.fft import fft, rfft, irfft, fftshift
 import sys
 sys.path.insert(1, 'scripts and data') 
 import mp3
 from subband_filtering import codec0
-
 
 h = np.load("scripts and data//h.npy", allow_pickle=True).tolist()['h'].reshape(-1, )
 M = 32
