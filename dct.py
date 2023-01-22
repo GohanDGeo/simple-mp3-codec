@@ -1,6 +1,9 @@
 from scipy.fftpack import dct, idct
 import numpy as np
 
+# Take a frame @Y of size NxM and find the DCT coefficients
+# The coefficients are calculate along each column (each subband)
+# The final vector @c has length NM, as it has N coefficients for each of the M subbands
 def frameDCT(Y):
     c = []
     for i in range(Y.shape[1]):
@@ -9,6 +12,9 @@ def frameDCT(Y):
     c = np.asarray(c).ravel()
     return c
 
+# For a vector of coefficients @c, calculate the inverse DCT transform,
+# recreating a frame of size NxM.
+# This means that every N coefficients, a column (a subband) is re-created.
 def iframeDCT(c):
     N = 36
     M = 32
@@ -16,3 +22,7 @@ def iframeDCT(c):
     for i in range(M):
         Yh[:,i] = idct(c[i*N:(i+1)*N], type=4,  norm = 'ortho')
     return Yh
+
+# Calculate the power of each DCT coefficient in dB
+def DCTpower(c):
+    return 10*np.log10(np.abs(c)**2)
