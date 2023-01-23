@@ -5,6 +5,7 @@ sys.path.insert(1, 'scripts and data')
 import mp3
 import frame
 import nothing
+from dct import frameDCT, iframeDCT
 
 def coder0(wavin, h, M, N):
 
@@ -32,7 +33,7 @@ def coder0(wavin, h, M, N):
         Y = frame.frame_sub_analysis(buffer, H, N)
         
         # STEP (c)
-        Yc = nothing.donothing(Y)
+        Yc = frameDCT(Y)
 
         # Step (d)5
         Ytot.append(Yc)
@@ -54,7 +55,7 @@ def decoder0(Ytot, h, M, N):
     for Yc in Ytot:
 
         # STEP (e)
-        Yh = nothing.idonothing(Yc)
+        Yh = iframeDCT(Yc)
         Yhtot.append(Yh)
     
     Yhtot = np.vstack(Yhtot)
