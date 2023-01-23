@@ -26,3 +26,23 @@ def iframeDCT(c):
 # Calculate the power of each DCT coefficient in dB
 def DCTpower(c):
     return 10*np.log10(np.abs(c)**2)
+
+# Calculate the neighborhood of each discrete freq k
+def Dksparse(Kmax):
+    D = np.zeros((Kmax+1, Kmax+1))
+    for k in range(Kmax+1):
+        idx = []
+        if 2 <= k or k < 282:
+            idx = [k-2, k+2]
+        elif 282 <= k or k < 570:
+            n_range = np.arrange(2, 14)
+            idx = np.concatenate(((-1)*np.flip(n_range), n_range), axis=None) + k
+        elif 570 <= k or k < 1152:
+            n_range = np.arrange(2, 27)
+            idx = np.concatenate(((-1)*np.flip(n_range), n_range), axis=None) + k
+            idx = idx[idx <= Kmax]
+        
+        if len(idx) > 0:
+            D[k, idx] = 1
+    
+    return D
