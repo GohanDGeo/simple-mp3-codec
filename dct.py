@@ -72,3 +72,24 @@ def STinit(c, D):
     ST = np.asarray(ST)
     return ST
     
+# Calculate the power of the maskers
+def MaskPower(c, ST):
+    Pc = DCTpower(c)
+    PM = np.zeros(len(ST))
+
+    # For each masker
+    for k in range(len(ST)):
+
+        # Get the masker's neighbors
+        neighbors = [k-1, k, k+1]
+
+        # Check if the neighbors exist (within bounds)
+        neighbors = neighbors[neighbors < len(c) & neighbors >= 0]
+
+        # Get power of neighbors
+        neigh_pc = Pc[neighbors]
+
+        # Get masker's power
+        PM[k] = 10*np.log10(np.sum(np.power(10, 0.1*neigh_pc)))
+
+    return PM
