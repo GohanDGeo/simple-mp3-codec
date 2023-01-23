@@ -98,3 +98,53 @@ def MaskPower(c, ST):
 def Hz2Barks(f):
     z = 13*np.arctan(0.00076*f) + 3.5*np.arctan((f/7500)**2)
     return z
+
+def discrete2Hz(k):
+    B = 689
+    N = 36
+    return k * B / N
+
+
+def STreduction(ST, c, Tq):
+
+    # Get maskers' power
+    PM = MaskPower(c, ST)
+
+    # Get Tq thresholds for the maskers
+    Tq_maskers = Tq[ST]
+
+    # Get indices of all maskers that are above the treshold
+    r_tq_idx = PM >= Tq_maskers
+
+    # Get the maskers
+    STr_tq = ST[r_tq_idx]
+    PMr_tq = PM[r_tq_idx]
+
+    # Now remove maskers based on the barks
+
+    # Get freq of maskers
+    freq = discrete2Hz(STr_tq)
+    
+    # Get barks of maskers
+    barks = Hz2Barks(freq)
+
+    # List of extra maskers to remove
+    to_remove = []
+    for i in range(len(STr_tq)):
+        ki = STr_tq[i]
+
+        bark_i = barks[i]
+        for j in range(i, len(STr_tq)):
+            bark_j = barks[j]
+
+            # Compare barks, if difference less than 0.5, remove the ith masker (smaller)
+            if bark_j - bark_i < 0.5:
+                to_remove.append(ki)
+
+    # Remove them from the kept maskers
+    idx = np.ravel([np.where(STr_tq == i) for i in to_remove])
+    
+    STr = STr_tq[idx]
+    PMr = PMr_tq[idx]
+
+    return STr, PMr
