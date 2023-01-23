@@ -56,16 +56,18 @@ def STinit(c, D):
     ST = []
 
     # Starting from k=3, check if it is a tonal component
-    for k in range(3, len(c)):
+    for k in range(len(c)):
         # Compare the power of the kth coefficient with each left and right coeff. and
         # with its Dk neighbors
+        neighbors = [k-1, k+1]
+        # If k == 1151, it does not have a right neighbor, so only check the left and Dk
+        neighbors = neighbors[neighbors < len(c) & neighbors >= 0]
 
-        if k == len(c) - 1:
-            if (Pc[k] > Pc[k-1]) and np.all(Pc[k] - 7 > Pc[D[k,:]]):
-                ST.append(k)
-        else:
-            if np.all([Pc[k] > Pc[k-1], Pc[k] > Pc[k+1]]) and np.all(Pc[k] - 7 > Pc[D[k,:]]):
-                ST.append(k)
+        # Get a list of all powers the kth coefficient has to compare with
+        compare_pc = np.concatenate((Pc[neighbors], Pc[np.nonzero(D[k,:])] + 7))
+        # And compare.
+        if np.all(Pc[k] > compare_pc):
+            ST.append(k)
 
     ST = np.asarray(ST)
     return ST
