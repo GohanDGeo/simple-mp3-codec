@@ -93,3 +93,8 @@ def MaskPower(c, ST):
         PM[k] = 10*np.log10(np.sum(np.power(10, 0.1*neigh_pc)))
 
     return PM
+
+# Calculates barks from frequency
+def Hz2Barks(f):
+    z = 13*np.arctan(0.00076*f) + 3.5*np.arctan((f/7500)**2)
+    return z
