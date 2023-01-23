@@ -46,3 +46,27 @@ def Dksparse(Kmax):
             D[k, idx] = 1
     
     return D
+
+# Get tonal components
+def STinit(c, D):
+    # Get power of coefficients
+    Pc = DCTpower(c)
+
+    # Initialize ST list
+    ST = []
+
+    # Starting from k=3, check if it is a tonal component
+    for k in range(3, len(c)):
+        # Compare the power of the kth coefficient with each left and right coeff. and
+        # with its Dk neighbors
+
+        if k == len(c) - 1:
+            if (Pc[k] > Pc[k-1]) and np.all(Pc[k] - 7 > Pc[D[k,:]]):
+                ST.append(k)
+        else:
+            if np.all([Pc[k] > Pc[k-1], Pc[k] > Pc[k+1]]) and np.all(Pc[k] - 7 > Pc[D[k,:]]):
+                ST.append(k)
+
+    ST = np.asarray(ST)
+    return ST
+    
