@@ -1,5 +1,7 @@
 from scipy.fftpack import dct, idct
+from scipy.sparse import csr_matrix
 import numpy as np
+from time import time
 
 # Take a frame @Y of size NxM and find the DCT coefficients
 # The coefficients are calculate along each column (each subband)
@@ -32,12 +34,12 @@ def Dksparse(Kmax):
     D = np.zeros((Kmax+1, Kmax+1))
     for k in range(Kmax+1):
         idx = []
-        if 2 <= k and k < 282:
+        if 2 <= k < 282:
             idx = [k-2, k+2]
-        elif 282 <= k and k < 570:
+        elif 282 <= k < 570:
             n_range = np.arange(2, 14)
             idx = np.concatenate(((-1)*np.flip(n_range), n_range), axis=None) + k
-        elif 570 <= k and k < 1152:
+        elif 570 <= k < 1152:
             n_range = np.arange(2, 27)
             idx = np.concatenate(((-1)*np.flip(n_range), n_range), axis=None) + k
             idx = idx[idx <= Kmax]
@@ -45,7 +47,7 @@ def Dksparse(Kmax):
         if len(idx) > 0:
             D[k, idx] = 1
     
-    return D
+    return csr_matrix(D)
 
 # Get tonal components
 def STinit(c, D):
@@ -55,7 +57,8 @@ def STinit(c, D):
     # Initialize ST list
     ST = []
 
-    # Starting from k=3, check if it is a tonal component
+    Dneighbors = np.split(D.indices, D.indptr[1:-1])
+    # Check if it is a tonal component
     for k in range(len(c)):
         # Compare the power of the kth coefficient with each left and right coeff. and
         # with its Dk neighbors
@@ -69,7 +72,9 @@ def STinit(c, D):
         #compare_pc = np.concatenate((Pc[neighbors], Pc[np.nonzero(D[k,:])] + 7))
         
         # And compare.
-        if np.all(Pc[k] > Pc[neighbors]) or np.all(Pc[k] > Pc[np.nonzero(D[k,:])] + 7):
+
+        Dk = Dneighbors[k]
+        if np.all(Pc[k] > Pc[neighbors]) or np.all(Pc[k] > Pc[Dk] + 7):
             ST.append(k)
 
     ST = np.asarray(ST)
@@ -123,7 +128,6 @@ def STreduction(ST, c, Tq):
     # Get the maskers
     STr_tq = ST[r_tq_idx]
     PMr_tq = PM[r_tq_idx]
-
     # Now remove maskers based on the barks
 
     # Get freq of maskers
@@ -144,10 +148,11 @@ def STreduction(ST, c, Tq):
             # Compare barks, if difference less than 0.5, remove the ith masker (smaller)
             if bark_j - bark_i < 0.5:
                 to_remove.append(ki)
+                break
 
     # Remove them from the kept maskers
     idx = np.ravel([np.where(STr_tq == i) for i in to_remove])
-    
+
     STr = STr_tq[idx]
     PMr = PMr_tq[idx]
 
@@ -179,16 +184,15 @@ def SpreadFunc(ST, PM, Kmax):
 
             # Implement the spread function as described
             value = 0
-
-            if -3 <= Dz and Dz < -1:
+            if -3 <= Dz < -1:
                 value = 17*Dz + 0.4*PMk + 11
-            elif -1 <= Dz and Dz < 0:
+            elif -1 <= Dz < 0:
                 value = (0.4*PMk + 6)*Dz
-            elif 0<= Dz and Dz < 1:
+            elif 0<= Dz < 1:
                 value = -17*Dz
             elif 1 <= Dz < 8:
                 value = (0.15*PMk - 17)*Dz - 0.15*PMk
-            
+
             # Set the value in the Sf matrix
             Sf[i,j] = value
     
@@ -200,8 +204,9 @@ def Masking_Thresholds(ST, PM, Kmax):
     Ti = np.zeros((Kmax+1, len(ST)))
 
     # Get Sf matrix
+    start = time()
     Sf = SpreadFunc(ST, PM, Kmax)
-
+    #print(f"Sf time: {time()-start}")
     # Iterate through each masker
     for j in range(len(ST)):
 
@@ -243,10 +248,20 @@ def psycho(c, D, Tq):
 
     Kmax = 1152-1
     
+    #print("STReduction")
+    start = time()
     ST, PM = STreduction(STinit(c, D), c, Tq)
+    #print(time() - start)
 
+    #print(f"ST lenth: {len(ST)}")
+    #print("MaskingThresholds")
+    start = time()
     Ti = Masking_Thresholds(ST, PM, Kmax)
+    #print(time() - start)
 
+    #print("GlobalMaskingThresholds")
+    start = time()
     Tg = Global_Masking_Thresholds(Ti, Tq)
+    #print(time() - start)
 
     return Tg

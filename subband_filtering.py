@@ -5,7 +5,7 @@ sys.path.insert(1, 'scripts and data')
 import mp3
 import frame
 import nothing
-from dct import frameDCT, iframeDCT, psycho, Dksparse
+from dct import frameDCT, iframeDCT
 
 def coder0(wavin, h, M, N):
 
@@ -27,8 +27,6 @@ def coder0(wavin, h, M, N):
     buffer = np.zeros((N-1)*M + L)
     Tq = np.load("scripts and data//Tq.npy", allow_pickle=True)[0]
 
-
-    D = Dksparse(1151)
     # For each frame, read points from the file
     for f in range(num_of_frames):
         buffer = data_pad[f*frame_size:(f+1)*frame_size + L - M]
@@ -38,9 +36,7 @@ def coder0(wavin, h, M, N):
         # STEP (c)
         Yc = nothing.donothing(Y)
 
-        c = frameDCT(Y)
-        Tg = psycho(c, D, Tq)
-        # Step (d)5
+        # Step (d)
         Ytot.append(Yc)
     
 
