@@ -1,10 +1,10 @@
 import numpy as np
+import matplotlib.pyplot as plt
+from scipy.io import wavfile
+import sys
+sys.path.insert(1, 'scripts and data') 
+import mp3
+from subband_filtering import codec0
 
-test = []
-
-for i in range(5):
-    test.append(i*np.ones(3))
-
-test = np.asarray(test).ravel()
-
-print(test)
+Tq = np.load("scripts and data//Tq.npy", allow_pickle=True)[0]
+print(Tq.shape)

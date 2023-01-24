@@ -35,10 +35,10 @@ def Dksparse(Kmax):
         if 2 <= k and k < 282:
             idx = [k-2, k+2]
         elif 282 <= k and k < 570:
-            n_range = np.arrange(2, 14)
+            n_range = np.arange(2, 14)
             idx = np.concatenate(((-1)*np.flip(n_range), n_range), axis=None) + k
         elif 570 <= k and k < 1152:
-            n_range = np.arrange(2, 27)
+            n_range = np.arange(2, 27)
             idx = np.concatenate(((-1)*np.flip(n_range), n_range), axis=None) + k
             idx = idx[idx <= Kmax]
         
@@ -59,9 +59,11 @@ def STinit(c, D):
     for k in range(len(c)):
         # Compare the power of the kth coefficient with each left and right coeff. and
         # with its Dk neighbors
-        neighbors = [k-1, k+1]
+        neighbors = np.array([k-1, k+1])
+
         # If k == 1151, it does not have a right neighbor, so only check the left and Dk
-        neighbors = neighbors[neighbors < len(c) & neighbors >= 0]
+        neighbors = neighbors[neighbors < len(c)]
+        neighbors = neighbors[neighbors >= 0]
 
         # Get a list of all powers the kth coefficient has to compare with
         #compare_pc = np.concatenate((Pc[neighbors], Pc[np.nonzero(D[k,:])] + 7))
@@ -82,10 +84,11 @@ def MaskPower(c, ST):
     for k in range(len(ST)):
 
         # Get the masker's neighbors
-        neighbors = [k-1, k, k+1]
+        neighbors = np.array([k-1, k, k+1])
 
         # Check if the neighbors exist (within bounds)
-        neighbors = neighbors[neighbors < len(c) & neighbors >= 0]
+        neighbors = neighbors[neighbors < len(c)]
+        neighbors = neighbors[neighbors >= 0]
 
         # Get power of neighbors
         neigh_pc = Pc[neighbors]
@@ -233,5 +236,17 @@ def Global_Masking_Thresholds(Ti, Tq):
 
         # Final calculation for the threshold of discrete freq i
         Tg[i] = 10*np.log10(first_term + second_term)
+
+    return Tg
+
+def psycho(c, D, Tq):
+
+    Kmax = 1152-1
+    
+    ST, PM = STreduction(STinit(c, D), c, Tq)
+
+    Ti = Masking_Thresholds(ST, PM, Kmax)
+
+    Tg = Global_Masking_Thresholds(Ti, Tq)
 
     return Tg
