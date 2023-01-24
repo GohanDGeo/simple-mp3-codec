@@ -214,3 +214,24 @@ def Masking_Thresholds(ST, PM, Kmax):
             Ti[i,j] = PMk - 0.275*zk + Sf[i,j] - 6.025
 
     return Ti
+
+# Calculate the global masking thresholds for reach discrete frequency
+def Global_Masking_Thresholds(Ti, Tq):
+
+    # Initialize an array to hold the thresholds
+    Kmax = Ti.shape[0]
+    Tg = np.zeros(Kmax)
+
+    # For each frequency calculate the threshold
+    for i in range(Kmax):
+
+        # First term inside the log
+        first_term = np.power(10, 0.1*Tq[i])
+
+        # Second term inside the log
+        second_term = np.sum(np.power(10, 0.1*Ti[i,:]))
+
+        # Final calculation for the threshold of discrete freq i
+        Tg[i] = 10*np.log10(first_term + second_term)
+
+    return Tg
