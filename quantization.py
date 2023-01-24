@@ -53,7 +53,7 @@ def DCT_band_scale(c):
     # For each band, find Sc(band), and calculate cs(i) for each i in band b
     for b in range(num_of_bands):
         idx = cb == b
-        sc[b] = c_abs[idx].min()
+        sc[b] = c_abs[idx].max()
         cs[idx] = np.sign(c[idx] * c_abs[idx] / sc[b])
 
     return cs, sc
