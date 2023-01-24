@@ -31,3 +31,31 @@ def critical_bands(K):
     cb += 1
 
     return cb
+
+def DCT_band_scale(c):
+
+    # Get number of coefficients
+    K = len(c)
+    
+    # Get critical bands
+    cb = critical_bands(K)
+
+    # Get |c(i)|^(3/4)
+    c_abs = np.float_power(np.abs(c), 3/4)
+
+    # Get number of critical bands
+    num_of_bands = len(np.unique(cb))
+
+    # Initialize sc, cs
+    sc = np.zeros(num_of_bands)
+    cs = np.zeros(K)
+    
+    # For each band, find Sc(band), and calculate cs(i) for each i in band b
+    for b in range(num_of_bands):
+        idx = cb == b
+        sc[b] = c_abs[idx].min()
+        cs[idx] = np.sign(c[idx] * c_abs[idx] / sc[b])
+
+    return cs, sc
+
+    
