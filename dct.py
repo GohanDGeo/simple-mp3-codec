@@ -191,3 +191,26 @@ def SpreadFunc(ST, PM, Kmax):
     
     return Sf
         
+def Masking_Thresholds(ST, PM, Kmax):
+    
+    # Initialize the Ti matrix
+    Ti = np.zeros((Kmax+1, len(ST)))
+
+    # Get Sf matrix
+    Sf = SpreadFunc(ST, PM, Kmax)
+
+    # Iterate through each masker
+    for j in range(len(ST)):
+
+        # Get the masker's discrete freq
+        k = ST[j]
+
+        # Get its bark and power
+        zk = Hz2Barks(discrete2Hz(k))
+        PMk = PM[j]
+
+        # For each discrete freq calculate T_M (contribution in threshold)
+        for i in range(Kmax+1):
+            Ti[i,j] = PMk - 0.275*zk + Sf[i,j] - 6.025
+
+    return Ti
