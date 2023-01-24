@@ -32,12 +32,12 @@ def Dksparse(Kmax):
     D = np.zeros((Kmax+1, Kmax+1))
     for k in range(Kmax+1):
         idx = []
-        if 2 <= k or k < 282:
+        if 2 <= k and k < 282:
             idx = [k-2, k+2]
-        elif 282 <= k or k < 570:
+        elif 282 <= k and k < 570:
             n_range = np.arrange(2, 14)
             idx = np.concatenate(((-1)*np.flip(n_range), n_range), axis=None) + k
-        elif 570 <= k or k < 1152:
+        elif 570 <= k and k < 1152:
             n_range = np.arrange(2, 27)
             idx = np.concatenate(((-1)*np.flip(n_range), n_range), axis=None) + k
             idx = idx[idx <= Kmax]
@@ -64,9 +64,10 @@ def STinit(c, D):
         neighbors = neighbors[neighbors < len(c) & neighbors >= 0]
 
         # Get a list of all powers the kth coefficient has to compare with
-        compare_pc = np.concatenate((Pc[neighbors], Pc[np.nonzero(D[k,:])] + 7))
+        #compare_pc = np.concatenate((Pc[neighbors], Pc[np.nonzero(D[k,:])] + 7))
+        
         # And compare.
-        if np.all(Pc[k] > compare_pc):
+        if np.all(Pc[k] > Pc[neighbors]) or np.all(Pc[k] > Pc[np.nonzero(D[k,:])] + 7):
             ST.append(k)
 
     ST = np.asarray(ST)
@@ -148,3 +149,45 @@ def STreduction(ST, c, Tq):
     PMr = PMr_tq[idx]
 
     return STr, PMr
+
+def SpreadFunc(ST, PM, Kmax):
+
+    # Initialize the Sf matrix
+    Sf = np.zeros((Kmax+1, len(ST)))
+
+    # Iterate through each masker
+    for j in range(len(ST)):
+
+        # Get the masker's discrete freq
+        k = ST[j]
+
+        # Get its bark and power
+        zk = Hz2Barks(discrete2Hz(k))
+        PMk = PM[j]
+
+        # For each discrete freq calculate the masker's contribution
+        for i in range(Kmax+1):
+
+            # Get discrete freq's bark
+            zi = Hz2Barks(discrete2Hz(i))
+
+            # Get difference
+            Dz = zi - zk
+
+            # Implement the spread function as described
+            value = 0
+
+            if -3 <= Dz and Dz < -1:
+                value = 17*Dz + 0.4*PMk + 11
+            elif -1 <= Dz and Dz < 0:
+                value = (0.4*PMk + 6)*Dz
+            elif 0<= Dz and Dz < 1:
+                value = -17*Dz
+            elif 1 <= Dz < 8:
+                value = (0.15*PMk - 17)*Dz - 0.15*PMk
+            
+            # Set the value in the Sf matrix
+            Sf[i,j] = value
+    
+    return Sf
+        
