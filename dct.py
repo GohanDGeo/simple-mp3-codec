@@ -1,7 +1,7 @@
 from scipy.fftpack import dct, idct
 from scipy.sparse import csr_matrix
 import numpy as np
-from time import time
+from helper import Hz2Barks, discrete2Hz
 
 # Take a frame @Y of size NxM and find the DCT coefficients
 # The coefficients are calculate along each column (each subband)
@@ -102,17 +102,6 @@ def MaskPower(c, ST):
         PM[k] = 10*np.log10(np.sum(np.power(10, 0.1*neigh_pc)))
 
     return PM
-
-# Calculates barks from frequency
-def Hz2Barks(f):
-    z = 13*np.arctan(0.00076*f) + 3.5*np.arctan((f/7500)**2)
-    return z
-
-def discrete2Hz(k):
-    B = 689
-    N = 36
-    return k * B / N
-
 
 def STreduction(ST, c, Tq):
 
