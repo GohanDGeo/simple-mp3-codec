@@ -58,4 +58,33 @@ def DCT_band_scale(c):
 
     return cs, sc
 
+def quantizer(x, b):
+    
+    d = np.linspace(-1, 1, (2**b)+1)
+    d =np.delete(d, len(d)//2)
+    symb_index = np.digitize(x, d) - len(d)//2
+
+    return symb_index
+
+def dequantizer(symb_index, b):
+
+    d = np.linspace(-1, 1, (2**b)+1)
+    d =np.delete(d, len(d)//2)
+    
+    mid_points = np.array([(d[i+1] + d[i])/2 for i in range(len(d)-1)])
+    idx = symb_index + len(d)//2 - 1
+    
+    xh = mid_points[idx]
+    
+    return xh
+
+x = [-0.9, 0.9, 0.01]
+
+symb_idx = quantizer(x, 3)
+print(symb_idx)
+
+xh = dequantizer(symb_idx, 3)
+print(xh)
+
+
     
