@@ -167,14 +167,41 @@ def all_bands_dequantizer(symb_index, B, SF):
 
     return xhat
 
+def RLE(symb_index, K):
 
-x = [-0.9, 0.9, 0.01]
+    # Initialize the count 
+    count = 0
 
-symb_idx = quantizer(x, 3)
-print(symb_idx)
+    # Set the first previous symbol as the first in the array
+    s_old = symb_index[0]
 
-xh = dequantizer(symb_idx, 3)
-print(xh)
+    # A list holding the tuples (symbol, length)
+    run_symbols = []
+
+    # For each symbol in the symbol indices
+    for i in range(1,len(symb_index)):
+
+        # Get the new symbol
+        s_new = symb_index[i]
+
+        # Compare the old and new symbol.
+        # If they are the same, increase the count
+        if s_new == s_old:
+            count += 1
+        # Else, append the symbol and its length as a tuple and reset the count
+        else:
+            run_symbols.append( (s_old, count))
+            count = 1
+        
+        # Set the new S as the old S
+        s_old = s_new
+
+    return run_symbols
+
+x = [1,1,1,1,2,3,3,3,4,4,1,1,1,5,6]
+
+print(x)
+print(RLE(x,5))
 
 
     
