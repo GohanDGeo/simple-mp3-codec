@@ -167,10 +167,4 @@ def all_bands_dequantizer(symb_index, B, SF):
 
     return xhat
 
-def huff(run_symbols):
-
-    frame_stream = []
-    frame_symbol_prob = []
-
-    return frame_stream, frame_symbol_prob
 
