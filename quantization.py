@@ -138,6 +138,36 @@ def all_bands_quantizer(c, Tg):
 
     return symb_index, SF, B
 
+def all_bands_dequantizer(symb_index, B, SF):
+    
+    K = len(c)
+
+    cb = critical_bands(K)
+    
+    xhat = np.zeros(K)
+
+
+    for band in range(cb):
+        
+        # Get coefficients of this band
+        idx = cb == band
+        
+        b = B[band]
+
+        # Get symbol indices
+        symb_idx = symb_index[idx]
+
+        # Get dequantized c_tilde values
+        c_d = dequantizer(symb_idx, b)
+        
+        # Get c_hat
+        c_hat = np.sign(c_d) * np.float_power(c_d * SF[band], 3/4) 
+
+        xhat[idx] = c_hat
+
+    return xhat
+
+
 x = [-0.9, 0.9, 0.01]
 
 symb_idx = quantizer(x, 3)
