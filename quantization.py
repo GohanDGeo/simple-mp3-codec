@@ -167,10 +167,10 @@ def all_bands_dequantizer(symb_index, B, SF):
 
     return xhat
 
-def RLE(symb_index, K):
+def RLE(symb_index):
 
     # Initialize the count 
-    count = 0
+    count = 1
 
     # Set the first previous symbol as the first in the array
     s_old = symb_index[0]
@@ -190,18 +190,46 @@ def RLE(symb_index, K):
             count += 1
         # Else, append the symbol and its length as a tuple and reset the count
         else:
-            run_symbols.append( (s_old, count))
+            run_symbols.append((s_old, count))
             count = 1
         
         # Set the new S as the old S
         s_old = s_new
 
+    # Append the last run of symbols
+    run_symbols.append((s_old, count))
+
     return run_symbols
+
+
+def IRLE(run_symbols, K):
+
+    # Initialize an array of symbols
+    symb_index = np.zeros(K)
+
+    # Initialize an index showing the index to currently add to in the symb_index array
+    idx = 0
+
+    # For each pair of (symbol, length)
+    for symbol_pair in run_symbols:
+
+        # Get the symbol and its run length
+        symbol = symbol_pair[0]
+        length = symbol_pair[1]
+
+        # Add the appropriate number of symbols to the symb_idx array
+        symb_index[idx:idx+length] = symbol
+
+        # Update the current index
+        idx += length
+
+    return symb_index
 
 x = [1,1,1,1,2,3,3,3,4,4,1,1,1,5,6]
 
 print(x)
-print(RLE(x,5))
+rle = RLE(x)
+print(rle)
 
-
-    
+xhat = IRLE(rle, len(x))
+print(xhat)
