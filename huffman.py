@@ -79,13 +79,50 @@ def huff(run_symbols):
 
     # Only one node is left, so iterate through the tree to get the codes
     codes = get_codes(nodes[0], codes)
-
+    print(codes)
     # Then build the bit stream using the generated codes
     for s in run_symbols:
         frame_stream += codes[s]
 
     return frame_stream, frame_symbol_prob
 
+def ihuff(frame_stream, frame_symbol_prob):
+
+    run_symbols = []
+    unique_symbols = frame_symbol_prob.keys()
+    nodes = []
+    for s in unique_symbols:
+        node = Node(s, frame_symbol_prob[s])
+        nodes.append(node)
+
+    while len(nodes) > 1:
+        nodes = sorted(nodes, key=lambda n: n.prob)
+        left = nodes[0]
+        right = nodes[1]
+
+        left.code = '0'
+        right.code = '1'
+
+        node = Node('',left.prob+right.prob, left, right)
+
+        del nodes[0:2]
+        
+        nodes.append(node)
+
+    root = nodes[0]
+    curr_node = root
+
+    for b in frame_stream:
+        if b == '0':
+            curr_node = curr_node.left
+        elif b == '1':
+            curr_node = curr_node.right
+        
+        if not curr_node.right and not curr_node.left:
+            run_symbols.append(curr_node.symbol)
+            curr_node = root
+    
+    return run_symbols
 
 x = [0,0,1,0,0,0,0,3,0,0,1,0,2,0,2,0,2]
 symb_index = RLE0(x)
@@ -97,3 +134,7 @@ frame_stream, frame_symbol_prob = huff(symb_index)
 print(symb_index)
 
 print(frame_stream)
+
+run_idx = ihuff(frame_stream, frame_symbol_prob)
+
+print(run_idx)
