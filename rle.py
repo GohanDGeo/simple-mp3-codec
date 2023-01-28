@@ -111,13 +111,3 @@ def IRLE0(run_symbols, K):
         idx += following_zeros + 1
 
     return symb_index
-
-x = [0,0,1,0,0,0,0,3,0,2,0,0,2,0,0]
-
-symb_index = RLE0(x)
-
-print(symb_index)
-
-xhat = IRLE0(symb_index, len(x))
-
-print(xhat)
