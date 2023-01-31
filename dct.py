@@ -31,8 +31,8 @@ def DCTpower(c):
 
 # Calculate the neighborhood of each discrete freq k
 def Dksparse(Kmax):
-    D = np.zeros((Kmax+1, Kmax+1))
-    for k in range(Kmax+1):
+    D = np.zeros((Kmax, Kmax))
+    for k in range(Kmax):
         idx = []
         if 2 <= k < 282:
             idx = [k-2, k+2]
@@ -42,7 +42,7 @@ def Dksparse(Kmax):
         elif 570 <= k < 1152:
             n_range = np.arange(2, 27)
             idx = np.concatenate(((-1)*np.flip(n_range), n_range), axis=None) + k
-            idx = idx[idx <= Kmax]
+            idx = idx[idx < Kmax]
         
         if len(idx) > 0:
             D[k, idx] = 1
@@ -150,7 +150,7 @@ def STreduction(ST, c, Tq):
 def SpreadFunc(ST, PM, Kmax):
 
     # Initialize the Sf matrix
-    Sf = np.zeros((Kmax+1, len(ST)))
+    Sf = np.zeros((Kmax, len(ST)))
 
     # Iterate through each masker
     for j in range(len(ST)):
@@ -163,7 +163,7 @@ def SpreadFunc(ST, PM, Kmax):
         PMk = PM[j]
 
         # For each discrete freq calculate the masker's contribution
-        for i in range(Kmax+1):
+        for i in range(Kmax):
 
             # Get discrete freq's bark
             zi = Hz2Barks(discrete2Hz(i))
@@ -190,7 +190,7 @@ def SpreadFunc(ST, PM, Kmax):
 def Masking_Thresholds(ST, PM, Kmax):
     
     # Initialize the Ti matrix
-    Ti = np.zeros((Kmax+1, len(ST)))
+    Ti = np.zeros((Kmax, len(ST)))
 
     # Get Sf matrix
     start = time()
@@ -207,7 +207,7 @@ def Masking_Thresholds(ST, PM, Kmax):
         PMk = PM[j]
 
         # For each discrete freq calculate T_M (contribution in threshold)
-        for i in range(Kmax+1):
+        for i in range(Kmax):
             Ti[i,j] = PMk - 0.275*zk + Sf[i,j] - 6.025
 
     return Ti
@@ -235,22 +235,9 @@ def Global_Masking_Thresholds(Ti, Tq):
 
 def psycho(c, D, Tq):
 
-    Kmax = 1152-1
+    Kmax = 1152
     
-    #print("STReduction")
-    start = time()
     ST, PM = STreduction(STinit(c, D), c, Tq)
-    #print(time() - start)
-
-    #print(f"ST lenth: {len(ST)}")
-    #print("MaskingThresholds")
-    start = time()
     Ti = Masking_Thresholds(ST, PM, Kmax)
-    #print(time() - start)
-
-    #print("GlobalMaskingThresholds")
-    start = time()
     Tg = Global_Masking_Thresholds(Ti, Tq)
-    #print(time() - start)
-
     return Tg

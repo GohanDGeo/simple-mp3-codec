@@ -140,7 +140,7 @@ def all_bands_quantizer(c, Tg):
 
 def all_bands_dequantizer(symb_index, B, SF):
     
-    K = len(c)
+    K = len(symb_index)
 
     cb = critical_bands(K)
     

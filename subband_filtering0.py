@@ -34,7 +34,7 @@ def coder0(wavin, h, M, N):
         Y = frame.frame_sub_analysis(buffer, H, N)
         
         # STEP (c)
-        Yc = frameDCT(Y)
+        Yc = nothing.donothing(Y)
 
         # Step (d)
         Ytot.append(Yc)
@@ -56,7 +56,7 @@ def decoder0(Ytot, h, M, N):
     for Yc in Ytot:
 
         # STEP (e)
-        Yh = iframeDCT(Yc)
+        Yh = nothing.idonothing(Yc)
         Yhtot.append(Yh)
     
     Yhtot = np.vstack(Yhtot)
