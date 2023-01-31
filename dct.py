@@ -193,9 +193,8 @@ def Masking_Thresholds(ST, PM, Kmax):
     Ti = np.zeros((Kmax, len(ST)))
 
     # Get Sf matrix
-    start = time()
     Sf = SpreadFunc(ST, PM, Kmax)
-    #print(f"Sf time: {time()-start}")
+
     # Iterate through each masker
     for j in range(len(ST)):
 

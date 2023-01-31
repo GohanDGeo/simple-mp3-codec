@@ -123,18 +123,3 @@ def ihuff(frame_stream, frame_symbol_prob):
             curr_node = root
     
     return run_symbols
-
-x = [0,0,1,0,0,0,0,3,0,0,1,0,2,0,2,0,2]
-symb_index = RLE0(x)
-
-get_probabilities(symb_index)
-
-frame_stream, frame_symbol_prob = huff(symb_index)
-
-print(symb_index)
-
-print(frame_stream)
-
-run_idx = ihuff(frame_stream, frame_symbol_prob)
-
-print(run_idx)

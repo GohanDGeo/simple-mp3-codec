@@ -20,7 +20,8 @@ def critical_bands(K):
 
         # If f is greater than the current band's limit
         # increase the current band number
-        if f > upper_limits[current_band]:
+        
+        if current_band < 24 and f > upper_limits[current_band]:
             current_band = min(current_band+1, 24)
 
         # Set the kth band
@@ -53,8 +54,10 @@ def DCT_band_scale(c):
     # For each band, find Sc(band), and calculate cs(i) for each i in band b
     for b in range(num_of_bands):
         idx = cb == b
-        sc[b] = c_abs[idx].max()
-        cs[idx] = np.sign(c[idx]) * (c_abs[idx] / sc[b])
+        # Check if there are freqs in this critical band
+        if np.sum(idx) > 0:
+            sc[b] = c_abs[idx].max()
+            cs[idx] = np.sign(c[idx]) * (c_abs[idx] / sc[b])
 
     return cs, sc
 
@@ -62,7 +65,23 @@ def quantizer(x, b):
     
     d = np.linspace(-1, 1, (2**b)+1)
     d =np.delete(d, len(d)//2)
-    symb_index = np.digitize(x, d) - len(d)//2
+
+    symb_index = np.zeros(len(x))
+    for i, s in enumerate(x):
+        
+        level = len(d) - 2
+        if s < d[-1]:
+            for j in range(len(d)-1):
+                dj = d[j]
+                dj1 = d[j+1]
+
+                if dj <= s < dj1:
+                    level = j
+                    break
+
+        symb_index[i] = level
+        
+    symb_index -= (len(d)-1)//2
 
     return symb_index
 
@@ -72,8 +91,7 @@ def dequantizer(symb_index, b):
     d =np.delete(d, len(d)//2)
     
     mid_points = np.array([(d[i+1] + d[i])/2 for i in range(len(d)-1)])
-    idx = symb_index + len(d)//2 - 1
-    
+    idx = (symb_index + len(d)//2 - 1).astype(int)
     xh = mid_points[idx]
     
     return xh
@@ -90,50 +108,53 @@ def all_bands_quantizer(c, Tg):
 
     B = np.zeros(len(cb))
 
-    for band in range(cb):
+    for band in range(len(cb)):
         
         # Get coefficients of this band
         idx = cb == band
 
-        # Get c values of this band
-        c_band = c[idx]
-        
-        # Get cs values of this band (Normalized)
-        cs_band = cs[idx]
-
-        # Get Tg values for c in this band
-        Tgb = Tg[idx]
-
-        # Initialize Pb to be larger than Tg (for each coefficient of the band)
-        Pb = Tgb + 1
-
-        b = 0
-
-        # Continue while Pb is higher than the threshold
-        while Pb > Tgb:
-
-            b += 1
-
-            # Get symbol indices
-            symb_idx = quantizer(cs_band, b)
-
-            # Get dequantized c_tilde values
-            c_d = dequantizer(symb_idx, b)
+        if np.sum(idx) > 0:
+            # Get c values of this band
+            c_band = c[idx]
             
-            # Get c_hat
-            c_hat = np.sign(c_d) * np.float_power(c_d * SF[band], 3/4) 
+            # Get cs values of this band (Normalized)
+            cs_band = cs[idx]
 
-            # Get error
-            e_b = np.abs(c_band - c_hat)
+            # Get Tg values for c in this band
+            Tgb = Tg[idx]
 
-            # Get error's power
-            Pb = 10*np.log10(e_b**2)
+            # Initialize Pb to be larger than Tg (for each coefficient of the band)
+            Pb = Tgb + 1
 
-        # Set the symbol indices to the array
-        symb_index[idx] = symb_idx
+            b = 0
 
-        # Append the number of bits to the B array
-        B[band] = b
+            symb_idx = []
+
+            # Continue while Pb is higher than the threshold
+            while np.any(Pb > Tgb):
+                
+                b += 1
+
+                # Get symbol indices
+                symb_idx = quantizer(cs_band, b)
+
+                # Get dequantized c_tilde values
+                c_d = dequantizer(symb_idx, b)
+                
+                # Get c_hat
+                c_hat = np.sign(c_d) * np.float_power(c_d * SF[band], 3/4) 
+
+                # Get error
+                e_b = np.abs(c_band - c_hat)
+
+                # Get error's power
+                Pb = 10*np.log10(e_b**2)
+
+            # Set the symbol indices to the array
+            symb_index[idx] = symb_idx
+
+            # Append the number of bits to the B array
+            B[band] = b
 
 
     return symb_index, SF, B
@@ -152,19 +173,18 @@ def all_bands_dequantizer(symb_index, B, SF):
         # Get coefficients of this band
         idx = cb == band
         
-        b = B[band]
+        if np.sum(idx) > 0:
+            b = B[band]
 
-        # Get symbol indices
-        symb_idx = symb_index[idx]
+            # Get symbol indices
+            symb_idx = symb_index[idx]
 
-        # Get dequantized c_tilde values
-        c_d = dequantizer(symb_idx, b)
-        
-        # Get c_hat
-        c_hat = np.sign(c_d) * np.float_power(c_d * SF[band], 3/4) 
+            # Get dequantized c_tilde values
+            c_d = dequantizer(symb_idx, b)
+            
+            # Get c_hat
+            c_hat = np.sign(c_d) * np.float_power(c_d * SF[band], 3/4) 
 
-        xhat[idx] = c_hat
+            xhat[idx] = c_hat
 
     return xhat
-
-

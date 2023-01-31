@@ -5,7 +5,10 @@ sys.path.insert(1, 'scripts and data')
 import mp3
 import frame
 import nothing
-from dct import frameDCT, iframeDCT
+from dct import *
+from quantization import *
+from rle import *
+from huffman import *
 
 def coder0(wavin, h, M, N):
 
@@ -25,7 +28,9 @@ def coder0(wavin, h, M, N):
     # Pad with zeros
     data_pad = np.pad(wavin, (0, frame_size*num_of_frames - len(wavin) + L - M), 'constant')
     buffer = np.zeros((N-1)*M + L)
+
     Tq = np.load("scripts and data//Tq.npy", allow_pickle=True)[0]
+    D = Dksparse(frame_size)
 
     # For each frame, read points from the file
     for f in range(num_of_frames):
@@ -36,8 +41,21 @@ def coder0(wavin, h, M, N):
         # STEP (c)
         Yc = frameDCT(Y)
 
+        Tg = psycho(Yc, D, Tq)
+
+        symb_index, SF, B = all_bands_quantizer(Yc, Tg)
+
+        run_symbols = RLE(symb_index, frame_size)
+
+        frame_stream, frame_symbol_prob = huff(run_symbols)
         # Step (d)
-        Ytot.append(Yc)
+        frame_info = dict()
+        frame_info['SF'] = SF
+        frame_info['B'] = B
+        frame_info['frame_stream'] = frame_stream
+        frame_info['frame_symbol_prob'] = frame_symbol_prob
+
+        Ytot.append(frame_info)
     
 
     return Ytot
@@ -53,9 +71,19 @@ def decoder0(Ytot, h, M, N):
     size = int(np.ceil(N-1 + L/M))
     
     buffer = np.zeros((size, M))
-    for Yc in Ytot:
+    K = N*M
+    for frame_info in Ytot:
 
         # STEP (e)
+        SF = frame_info['SF']
+        B = frame_info['B']
+        frame_stream = frame_info['frame_stream']
+        frame_symbol_prob = frame_info['frame_symbol_prob']
+
+        run_symbols = ihuff(frame_stream, frame_symbol_prob)
+        symb_index = IRLE(run_symbols, K)
+        Yc = all_bands_dequantizer(symb_index, B, SF)
+
         Yh = iframeDCT(Yc)
         Yhtot.append(Yh)
     
