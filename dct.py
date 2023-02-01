@@ -47,7 +47,7 @@ def Dksparse(Kmax):
         if len(idx) > 0:
             D[k, idx] = 1
     
-    return csr_matrix(D)
+    return D
 
 # Get tonal components
 def STinit(c, D):
@@ -57,7 +57,7 @@ def STinit(c, D):
     # Initialize ST list
     ST = []
 
-    Dneighbors = np.split(D.indices, D.indptr[1:-1])
+    #Dneighbors = np.split(D.indices, D.indptr[1:-1])
     # Check if it is a tonal component
     for k in range(len(c)):
         # Compare the power of the kth coefficient with each left and right coeff. and
@@ -73,7 +73,8 @@ def STinit(c, D):
         
         # And compare.
 
-        Dk = Dneighbors[k]
+        #Dk = Dneighbors[k]
+        Dk = np.nonzero(D[k,:])
         if np.all(Pc[k] > Pc[neighbors]) or np.all(Pc[k] > Pc[Dk] + 7):
             ST.append(k)
 

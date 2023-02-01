@@ -29,7 +29,6 @@ def critical_bands(K):
     
     # Plus one as it was zero indexed, and bands
     # are one indexed
-    cb += 1
 
     return cb
 
@@ -42,7 +41,7 @@ def DCT_band_scale(c):
     cb = critical_bands(K)
 
     # Get |c(i)|^(3/4)
-    c_abs = np.float_power(np.abs(c), 3/4)
+    c_abs = np.power(np.abs(c), 3/4)
 
     # Get number of critical bands
     num_of_bands = len(np.unique(cb))
@@ -52,7 +51,7 @@ def DCT_band_scale(c):
     cs = np.zeros(K)
     
     # For each band, find Sc(band), and calculate cs(i) for each i in band b
-    for b in range(num_of_bands):
+    for b in range(25):
         idx = cb == b
         # Check if there are freqs in this critical band
         if np.sum(idx) > 0:
@@ -86,7 +85,6 @@ def quantizer(x, b):
     return symb_index
 
 def dequantizer(symb_index, b):
-
     d = np.linspace(-1, 1, (2**b)+1)
     d =np.delete(d, len(d)//2)
     
@@ -108,7 +106,7 @@ def all_bands_quantizer(c, Tg):
 
     B = np.zeros(len(cb))
 
-    for band in range(len(cb)):
+    for band in range(25):
         
         # Get coefficients of this band
         idx = cb == band
@@ -142,7 +140,7 @@ def all_bands_quantizer(c, Tg):
                 c_d = dequantizer(symb_idx, b)
                 
                 # Get c_hat
-                c_hat = np.sign(c_d) * np.float_power(c_d * SF[band], 3/4) 
+                c_hat = np.sign(c_d) * np.power(np.abs(c_d) * SF[band], 4/3) 
 
                 # Get error
                 e_b = np.abs(c_band - c_hat)
@@ -157,7 +155,7 @@ def all_bands_quantizer(c, Tg):
             B[band] = b
 
 
-    return symb_index, SF, B
+    return symb_index, SF, B.astype(int)
 
 def all_bands_dequantizer(symb_index, B, SF):
     
@@ -167,8 +165,7 @@ def all_bands_dequantizer(symb_index, B, SF):
     
     xhat = np.zeros(K)
 
-
-    for band in range(cb):
+    for band in range(25):
         
         # Get coefficients of this band
         idx = cb == band
@@ -183,7 +180,7 @@ def all_bands_dequantizer(symb_index, B, SF):
             c_d = dequantizer(symb_idx, b)
             
             # Get c_hat
-            c_hat = np.sign(c_d) * np.float_power(c_d * SF[band], 3/4) 
+            c_hat = np.sign(c_d) * np.power(np.abs(c_d) * SF[band], 4/3) 
 
             xhat[idx] = c_hat
 

@@ -79,7 +79,7 @@ def huff(run_symbols):
 
     # Only one node is left, so iterate through the tree to get the codes
     codes = get_codes(nodes[0], codes)
-    print(codes)
+
     # Then build the bit stream using the generated codes
     for s in run_symbols:
         frame_stream += codes[s]

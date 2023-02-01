@@ -4,7 +4,6 @@ import sys
 sys.path.insert(1, 'scripts and data') 
 import mp3
 import frame
-import nothing
 from dct import *
 from quantization import *
 from rle import *
@@ -37,15 +36,14 @@ def coder0(wavin, h, M, N):
         buffer = data_pad[f*frame_size:(f+1)*frame_size + L - M]
         # STEP (b)
         Y = frame.frame_sub_analysis(buffer, H, N)
-        
+
         # STEP (c)
         Yc = frameDCT(Y)
 
         Tg = psycho(Yc, D, Tq)
 
         symb_index, SF, B = all_bands_quantizer(Yc, Tg)
-
-        run_symbols = RLE(symb_index, frame_size)
+        run_symbols = RLE(symb_index)
 
         frame_stream, frame_symbol_prob = huff(run_symbols)
         # Step (d)
@@ -54,7 +52,6 @@ def coder0(wavin, h, M, N):
         frame_info['B'] = B
         frame_info['frame_stream'] = frame_stream
         frame_info['frame_symbol_prob'] = frame_symbol_prob
-
         Ytot.append(frame_info)
     
 
@@ -77,13 +74,13 @@ def decoder0(Ytot, h, M, N):
         # STEP (e)
         SF = frame_info['SF']
         B = frame_info['B']
+
         frame_stream = frame_info['frame_stream']
         frame_symbol_prob = frame_info['frame_symbol_prob']
 
         run_symbols = ihuff(frame_stream, frame_symbol_prob)
         symb_index = IRLE(run_symbols, K)
         Yc = all_bands_dequantizer(symb_index, B, SF)
-
         Yh = iframeDCT(Yc)
         Yhtot.append(Yh)
     
