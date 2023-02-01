@@ -41,12 +41,13 @@ def coder0(wavin, h, M, N):
         # STEP (c)
         Yc = frameDCT(Y)
 
-        Tg = psycho(Yc, D, Tq)
+        Tg = psycho(Yc, D, Tq) - 20
 
-        symb_index, SF, B = all_bands_quantizer(Yc, Tg)
+        symb_index, SF, B = all_bands_quantizer(Yc, Tg) 
         run_symbols = RLE(symb_index)
 
         frame_stream, frame_symbol_prob = huff(run_symbols)
+
         # Step (d)
         frame_info = dict()
         frame_info['SF'] = SF
@@ -54,7 +55,6 @@ def coder0(wavin, h, M, N):
         frame_info['frame_stream'] = frame_stream
         frame_info['frame_symbol_prob'] = frame_symbol_prob
         Ytot.append(frame_info)
-    
 
     return Ytot
 
