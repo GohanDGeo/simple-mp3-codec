@@ -8,4 +8,4 @@ def Hz2Barks(f):
 def discrete2Hz(k):
     B = 689
     N = 36
-    return k * B / N
+    return k * B/N

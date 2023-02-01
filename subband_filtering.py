@@ -8,6 +8,7 @@ from dct import *
 from quantization import *
 from rle import *
 from huffman import *
+from psychoacoustic import *
 
 def coder0(wavin, h, M, N):
 
