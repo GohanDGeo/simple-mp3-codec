@@ -4,7 +4,7 @@ from scipy.io import wavfile
 import sys
 sys.path.insert(1, 'scripts and data') 
 import mp3
-from subband_filtering import codec0
+from subband_filtering0 import codec0
 
 h = np.load("scripts and data//h.npy", allow_pickle=True).tolist()['h'].reshape(-1, )
 M = 32

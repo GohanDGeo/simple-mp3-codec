@@ -26,7 +26,6 @@ def RLE(symb_index):
             run_symbols.append((s, count))
             count = 0
 
-
     return run_symbols
 
 

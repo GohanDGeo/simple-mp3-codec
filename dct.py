@@ -1,7 +1,5 @@
 from scipy.fftpack import dct, idct
-from scipy.sparse import csr_matrix
 import numpy as np
-from helper import Hz2Barks, discrete2Hz
 
 # Take a frame @Y of size NxM and find the DCT coefficients
 # The coefficients are calculate along each column (each subband)

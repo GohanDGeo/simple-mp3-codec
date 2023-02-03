@@ -1,5 +1,4 @@
 import numpy as np
-from scipy.io import wavfile
 import sys
 sys.path.insert(1, 'scripts and data') 
 import mp3
@@ -10,7 +9,7 @@ from rle import *
 from huffman import *
 from psychoacoustic import *
 
-def coder0(wavin, h, M, N):
+def MP3cod(wavin, h, M, N):
 
     H  = mp3.make_mp3_analysisfb(h, M)
     
@@ -58,7 +57,7 @@ def coder0(wavin, h, M, N):
 
     return Ytot
 
-def decoder0(Ytot, h, M, N):
+def MP3decod(Ytot, h, M, N):
     
     G  = mp3.make_mp3_synthesisfb(h, M)
     L = G.shape[0]
@@ -99,7 +98,7 @@ def decoder0(Ytot, h, M, N):
 
     return xhat
 
-def codec0(wavin, h, M, N):
-    Ytot = coder0(wavin, h, M, N)
-    xhat = decoder0(Ytot, h, M, N)
+def MP3codec(wavin, h, M, N):
+    Ytot = MP3cod(wavin, h, M, N)
+    xhat = MP3decod(Ytot, h, M, N)
     return xhat, Ytot
