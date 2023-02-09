@@ -7,7 +7,7 @@ def Dksparse(Kmax):
     D = np.zeros((Kmax, Kmax))
     for k in range(Kmax):
         idx = []
-        if 2 <= k < 282:
+        if 2 < k < 282:
             idx = [k-2, k+2]
         elif 282 <= k < 570:
             n_range = np.arange(2, 14)

@@ -3,11 +3,11 @@ import matplotlib.pyplot as plt
 from scipy.io import wavfile
 from simple_mp3_codec import MP3codec
 
-h = np.load("scripts and data//h.npy", allow_pickle=True).tolist()['h'].reshape(-1, )
+h = np.load("h.npy", allow_pickle=True).tolist()['h'].reshape(-1, )
 M = 32
 N = 36
 
-samplerate, wavin = wavfile.read("scripts and data//myfile.wav")
+samplerate, wavin = wavfile.read("myfile.wav")
 
 wavin = np.array(wavin, dtype=float)
 xhat, Ytot = MP3codec(wavin, h, M, N)

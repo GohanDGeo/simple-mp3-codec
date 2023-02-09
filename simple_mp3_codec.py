@@ -1,6 +1,6 @@
 import numpy as np
-import sys
-sys.path.insert(1, 'scripts and data') 
+#import sys
+#sys.path.insert(1, 'scripts and data') 
 import mp3
 import frame
 from dct import *
@@ -28,9 +28,10 @@ def MP3cod(wavin, h, M, N):
     data_pad = np.pad(wavin, (0, frame_size*num_of_frames - len(wavin) + L - M), 'constant')
     buffer = np.zeros((N-1)*M + L)
 
-    Tq = np.load("scripts and data//Tq.npy", allow_pickle=True)[0]
+    Tq = np.load("Tq.npy", allow_pickle=True)[0]
     D = Dksparse(frame_size)
 
+    bitstream = open("bitstream.txt", 'w')
     # For each frame, read points from the file
     for f in range(num_of_frames):
         buffer = data_pad[f*frame_size:(f+1)*frame_size + L - M]
@@ -40,13 +41,13 @@ def MP3cod(wavin, h, M, N):
         # STEP (c)
         Yc = frameDCT(Y)
 
-        Tg = psycho(Yc, D, Tq) - 20
+        Tg = psycho(Yc, D, Tq) - 17
 
         symb_index, SF, B = all_bands_quantizer(Yc, Tg) 
         run_symbols = RLE(symb_index)
 
         frame_stream, frame_symbol_prob = huff(run_symbols)
-
+        bitstream.write(frame_stream)
         # Step (d)
         frame_info = dict()
         frame_info['SF'] = SF
@@ -55,6 +56,7 @@ def MP3cod(wavin, h, M, N):
         frame_info['frame_symbol_prob'] = frame_symbol_prob
         Ytot.append(frame_info)
 
+    bitstream.close()
     return Ytot
 
 def MP3decod(Ytot, h, M, N):

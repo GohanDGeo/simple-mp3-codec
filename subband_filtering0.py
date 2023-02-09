@@ -25,7 +25,6 @@ def coder0(wavin, h, M, N):
     # Pad with zeros
     data_pad = np.pad(wavin, (0, frame_size*num_of_frames - len(wavin) + L - M), 'constant')
     buffer = np.zeros((N-1)*M + L)
-    Tq = np.load("scripts and data//Tq.npy", allow_pickle=True)[0]
 
     # For each frame, read points from the file
     for f in range(num_of_frames):
