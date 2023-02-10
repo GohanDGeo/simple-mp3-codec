@@ -1,11 +1,7 @@
 import numpy as np
-from scipy.io import wavfile
-import sys
-sys.path.insert(1, 'scripts and data') 
-import mp3
-import frame
-import nothing
-from dct import frameDCT, iframeDCT
+from . import mp3
+from . import frame
+from . import nothing
 
 def coder0(wavin, h, M, N):
 

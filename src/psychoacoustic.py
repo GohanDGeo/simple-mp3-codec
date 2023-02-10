@@ -1,6 +1,6 @@
 import numpy as np
-from helper import Hz2Barks, discrete2Hz
-from dct import *
+from .helper import Hz2Barks, discrete2Hz
+from .dct import *
 
 # Calculate the neighborhood of each discrete freq k
 def Dksparse(Kmax):

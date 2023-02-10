@@ -1,5 +1,5 @@
 import numpy as np
-from helper import discrete2Hz
+from .helper import discrete2Hz
 
 def critical_bands(K):
     

@@ -1,13 +1,11 @@
 import numpy as np
-#import sys
-#sys.path.insert(1, 'scripts and data') 
-import mp3
-import frame
-from dct import *
-from quantization import *
-from rle import *
-from huffman import *
-from psychoacoustic import *
+from . import mp3
+from . import frame
+from .dct import *
+from .quantization import *
+from .rle import *
+from .huffman import *
+from .psychoacoustic import *
 
 def MP3cod(wavin, h, M, N):
 

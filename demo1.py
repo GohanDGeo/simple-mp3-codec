@@ -17,10 +17,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.io import wavfile
-#import sys
-#sys.path.insert(1, 'scripts and data') 
-import mp3
-from subband_filtering0 import codec0
+from src import mp3
+from src.subband_filtering0 import codec0
 
 # Load and define the required information for the filterbank
 h = np.load("h.npy", allow_pickle=True).tolist()['h'].reshape(-1, )

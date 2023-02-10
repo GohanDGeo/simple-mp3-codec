@@ -1,6 +1,3 @@
-import numpy as np
-from rle import *
-
 class Node:
     
     def __init__(self, symbol, prob, left=None, right=None):

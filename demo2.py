@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.io import wavfile
-from simple_mp3_codec import MP3codec
+from src.simple_mp3_codec import MP3codec
 
 h = np.load("h.npy", allow_pickle=True).tolist()['h'].reshape(-1, )
 M = 32
