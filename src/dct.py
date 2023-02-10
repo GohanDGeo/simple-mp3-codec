@@ -1,3 +1,12 @@
+# MULTIMEDIA SYSTEMS, ECE AUTH 2022-2023
+# KOUTROUMPIS GEORGIOS, 9668
+# KYRGIAFINI-AGGELI DIMITRA, 9685
+# 
+# dct.py
+# 
+# This file contains the function related to the DCT processing of an mp3 frame
+
+# Imports
 from scipy.fftpack import dct, idct
 import numpy as np
 

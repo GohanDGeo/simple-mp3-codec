@@ -19,7 +19,7 @@ def RLE(symb_index):
 
         # Check if it is a following zero (and not the last element)
         # (If it is the last element, a symbol in the form of (0, N) will be added, where N the N last 0s)
-        if s == 0 and i != (len(symb_index)-1):
+        if s == 0:
             count += 1
         # Else, append the symbol and its length as a tuple and reset the count
         else:
@@ -51,4 +51,4 @@ def IRLE(run_symbols, K):
         # Update the current index
         idx += following_zeros + 1
 
-    return symb_index
+    return np.int16(symb_index)

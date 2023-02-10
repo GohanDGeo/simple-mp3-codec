@@ -1,3 +1,6 @@
+# MULTIMEDIA SYSTEMS, ECE AUTH 2022-2023
+# KOUTROUMPIS GEORGIOS, 9668
+# KYRGIAFINI-AGGELI DIMITRA, 9685
 import numpy as np
 from . import mp3
 from . import frame
