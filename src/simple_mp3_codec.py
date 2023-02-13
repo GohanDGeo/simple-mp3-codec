@@ -73,7 +73,7 @@ def MP3cod(wavin, h, M, N):
         # Apply the psychoacoustic model, and move it by 20
         # 20 was found with listening tests, while keeping a decent
         # compression ratio
-        Tg = psycho(Yc, D, Tq) - 15
+        Tg = psycho(Yc, D, Tq) - 20
 
         # Quantize the coefficients
         symb_index, SF, B = all_bands_quantizer(Yc, Tg) 

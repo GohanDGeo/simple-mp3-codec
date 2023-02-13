@@ -50,10 +50,12 @@ xhat_shifted = np.copy(wavin[shift:])
 # Plot the error of the two files
 error_fig = plt.figure()
 plt.plot(xhat_shifted - wavin_shifted)
+plt.title("Reconstructed - Original (Error)")
 error_fig.show()
 
 ax = plt.gca()
 ax.set_ylim([np.min(wavin_shifted), np.max(wavin_shifted)])
+ax.set_xlim([0, len(wavin_shifted)])
 
 # Calculate the SNR
 signal = np.mean(np.float64(wavin_shifted)**2)
@@ -64,7 +66,7 @@ print(f"SNR: {snr}\n")
 
 # Get the compression ratio between the original file
 # and the produced huffman encoded bitstream
-ratio = compression_ratio(filename, "bitstream.txt")
-print(f"Compression Ratio: {ratio}\n")
+uncompressed_size, compressed_size, ratio = compression_ratio(filename, "bitstream.txt")
+print(f"Original File Size: {uncompressed_size} KiloBytes\nEncoded File Size: {compressed_size} KiloBytes\nCompression Ratio: {ratio}\n")
 plt.show()
 

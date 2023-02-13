@@ -90,6 +90,7 @@ xhat_shifted = np.copy(wavin[shift:])
 # Plot the error of the two files
 error_fig = plt.figure()
 plt.plot(xhat_shifted - wavin_shifted)
+plt.title("Reconstructed - Original (Error)")
 error_fig.show()
 
 # And set the scale the same as the scale of the original file
