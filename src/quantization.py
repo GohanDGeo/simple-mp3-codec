@@ -113,7 +113,7 @@ def dequantizer(symb_index, b):
 
     # Find decision boundaries, like in the quantizer
     d = np.linspace(-1, 1, (2**b)+1)
-    d =np.delete(d, len(d)//2)
+    d = np.delete(d, len(d)//2)
     
     # Find middle point for each zone
     mid_points = np.array([(d[i+1] + d[i])/2 for i in range(len(d)-1)])
