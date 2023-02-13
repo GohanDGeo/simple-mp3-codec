@@ -26,8 +26,8 @@ def discrete2Hz(k):
 # Calculate and return the compression ratio between 2 files (uncompressed, compressed)
 def compression_ratio(uncompressed, compressed):
 
-    compressed_size = os.stat(compressed)
-    uncompressed_size = os.stat(uncompressed)
+    compressed_size = os.stat(compressed).st_size
+    uncompressed_size = os.stat(uncompressed).st_size
 
     return  uncompressed_size/compressed_size
     

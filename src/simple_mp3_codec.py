@@ -54,7 +54,7 @@ def MP3cod(wavin, h, M, N):
     # Create a .txt file to save the resulting encoding
     bitstream = open("bitstream.txt", 'w')
 
-    # For each frame, read points from the file
+    # For each frame, read samples from the file
     for f in range(num_of_frames):
 
         # Get the next @(N*M) samples, with an overlap of @(L-M) with the 
@@ -73,7 +73,7 @@ def MP3cod(wavin, h, M, N):
         # Apply the psychoacoustic model, and move it by 20
         # 20 was found with listening tests, while keeping a decent
         # compression ratio
-        Tg = psycho(Yc, D, Tq) - 20
+        Tg = psycho(Yc, D, Tq) - 15
 
         # Quantize the coefficients
         symb_index, SF, B = all_bands_quantizer(Yc, Tg) 
@@ -96,8 +96,8 @@ def MP3cod(wavin, h, M, N):
         frame_info['SF'] = SF
         # Save the number of bits used for quantizing each band
         frame_info['B'] = B
-        # TODO: Remove this
-        frame_info['frame_stream'] = frame_stream
+        # Save the number of bits produced from the huffman encoding in this frame
+        frame_info['frame_stream_bits'] = len(frame_stream)
         # Save the symbol probabilities for each symbol (in the frame)
         frame_info['frame_symbol_prob'] = frame_symbol_prob
         # Append the dictionary to @Ytot, which will contain decoding information for all frames
@@ -133,6 +133,8 @@ def MP3decod(Ytot, h, M, N):
     # Number of samples in each frame
     K = N*M
 
+    # Open the bitstream file, to read the huffman encoded bits
+    bitstream = open("bitstream.txt", 'r')
     # Decode each frame, thus read the decoding information for each frame
     # in each iteration
     for frame_info in Ytot:
@@ -143,8 +145,11 @@ def MP3decod(Ytot, h, M, N):
         SF = frame_info['SF']
         B = frame_info['B']
 
-        # TODO: Change this
-        frame_stream = frame_info['frame_stream']
+        # Get number of bits to read in this frame
+        frame_stream_bits = frame_info['frame_stream_bits']
+        # And read these bits from the file
+        frame_stream = bitstream.read(frame_stream_bits)
+
         # Get the symbol probabilites for this frame
         frame_symbol_prob = frame_info['frame_symbol_prob']
 

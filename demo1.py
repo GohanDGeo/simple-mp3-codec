@@ -102,7 +102,7 @@ noise = np.mean(np.float64(wavin_shifted-xhat_shifted)**2)
 
 # Print the SNR between the two audio files
 snr = 10*np.log10(signal/noise)
-print(f"SNR {snr}")
+print(f"SNR: {snr}")
 
 # Show plots
 plt.show()
