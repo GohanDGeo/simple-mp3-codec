@@ -58,8 +58,8 @@ def MP3cod(wavin, h, M, N):
     for f in range(num_of_frames):
 
         # Get the next @(N*M) samples, with an overlap of @(L-M) with the 
-        # previous frame. The first frame has no overlap, thus the first
-        # @(L-M) samples are lost.
+        # next/previous frame. The first frame has no overlap on its first samples, 
+        # thus the first @(L-M) samples are lost.
         buffer = data_pad[f*frame_size:(f+1)*frame_size + L - M]
 
         # STEP (b)
@@ -182,7 +182,7 @@ def MP3decod(Ytot, h, M, N):
     for f in range(len(Ytot)):
 
         # Fill the buffer with @(N + L/M) rows, 
-        # with @(L/M) overlapping with the previous frame
+        # with @(L/M) overlapping with the next/previous frame
         buffer = Yhtot[f*N:(f+1)*N + int(L/M), :]
 
         # STEP (f)

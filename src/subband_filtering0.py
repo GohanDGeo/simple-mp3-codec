@@ -15,7 +15,7 @@ from . import frame
 from . import nothing
 
 # Performs the analysis step for a given wav file
-def coder0(wavin, h, M, N):
+def coder(wavin, h, M, N):
 
     # Create the H matrix from the given an impulse response @h and the number
     # of subbands @M
@@ -64,7 +64,7 @@ def coder0(wavin, h, M, N):
 
 # Performs the synthesis of the analyzed file, given @Ytot, which contains
 # the "processed" frames (at this stage, no processing is done)
-def decoder0(Ytot, h, M, N):
+def decoder(Ytot, h, M, N):
     
     # Get the synthesis matrix
     G  = mp3.make_mp3_synthesisfb(h, M)
@@ -119,7 +119,7 @@ def decoder0(Ytot, h, M, N):
 
 # Perform both coder0, decoder0 steps
 # and return a reconstructed @xhat array
-def codec0(wavin, h, M, N):
-    Ytot = coder0(wavin, h, M, N)
-    xhat = decoder0(Ytot, h, M, N)
+def codec(wavin, h, M, N):
+    Ytot = coder(wavin, h, M, N)
+    xhat = decoder(Ytot, h, M, N)
     return xhat, Ytot

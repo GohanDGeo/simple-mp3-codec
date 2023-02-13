@@ -18,7 +18,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.io import wavfile
 from src import mp3
-from src.subband_filtering0 import codec0
+from src.subband_filtering0 import codec
 
 # Load and define the required information for the filterbank
 h = np.load("h.npy", allow_pickle=True).tolist()['h'].reshape(-1, )
@@ -73,7 +73,7 @@ except:
 wavin = np.array(wavin, dtype=float)
 
 # Reconstruct the audio file
-xhat, Ytot = codec0(wavin, h, M, N)
+xhat, Ytot = codec(wavin, h, M, N)
 
 # Cast to int16 so the audio file can be played by media players
 wavin = np.int16(wavin)
