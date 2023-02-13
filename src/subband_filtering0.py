@@ -48,7 +48,7 @@ def decoder0(Ytot, h, M, N):
     xhat = []
     
     Yhtot = []
-    size = int(np.ceil(N-1 + L/M))
+    size = int(np.ceil(N + L/M))
     
     buffer = np.zeros((size, M))
     for Yc in Ytot:

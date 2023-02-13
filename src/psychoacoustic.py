@@ -1,22 +1,49 @@
+# MULTIMEDIA SYSTEMS, ECE AUTH 2022-2023
+# KOUTROUMPIS GEORGIOS, 9668
+# KYRGIAFINI-AGGELI DIMITRA, 9685
+# 
+# psychoacoustic.py
+#
+# This file contains the functions that implement the psychoacoustic model.
+
+# Imports
 import numpy as np
 from .helper import Hz2Barks, discrete2Hz
 from .dct import *
 
-# Calculate the neighborhood of each discrete freq k
+# Calculate the neighborhood of each discrete freq k.
+# Each row corresponds to a discrete frequency k.
+# Every row is initialized at 0, but according to the formula given in the project,
+# for every other dicrete freq j that is in th neighberhood Dk of k, 
+# The element D[k, j] is set to 1
 def Dksparse(Kmax):
+    # Initialize the matrix D
     D = np.zeros((Kmax, Kmax))
+    
+    # Then find the neighborhood for each k
     for k in range(Kmax):
+        # A list containing the indices of k's neighbors
         idx = []
+
+        # Check in which range k is in, 
+        # and determine its neighbors accordingly
         if 2 < k < 282:
+            # Here the neighbors are the neighbor 2 to the left
+            # and 2 to the right
             idx = [k-2, k+2]
         elif 282 <= k < 570:
+            # First create a list from 2 to 14 ([2, 3, 4, ...,  14])
             n_range = np.arange(2, 14)
+            # Then the neighbors are [k-14, k-13, k-12, ... , k-2, k+2, k+3, ... , k+14]
             idx = np.concatenate(((-1)*np.flip(n_range), n_range), axis=None) + k
         elif 570 <= k < 1152:
+            # Same here
             n_range = np.arange(2, 28)
             idx = np.concatenate(((-1)*np.flip(n_range), n_range), axis=None) + k
+            # And check that the neighbor indices do not go out of bounds (for the last discrete freqs)
             idx = idx[idx < Kmax]
         
+        # Then set the neighbors to 1
         if len(idx) > 0:
             D[k, idx] = 1
     
@@ -32,18 +59,17 @@ def STinit(c, D):
 
     # Check if it is a tonal component
     for k in range(len(c)):
-        # Compare the power of the kth coefficient with each left and right coeff. and
-        # with its Dk neighbors
+        # Get the indices of the left and right neihbor
         neighbors = np.array([k-1, k+1])
 
-        # If k == 1151, it does not have a right neighbor, so only check the left and Dk
+        # Check that they are within bounds
         neighbors = neighbors[neighbors < len(c)]
         neighbors = neighbors[neighbors >= 0]
         
-        # And compare.
-
-        #Dk = Dneighbors[k]
+        # Get the other neighbors, according to Dk
         Dk = np.nonzero(D[k,:])
+
+        # And check if either condition is true
         if np.all(Pc[k] > Pc[neighbors]) or np.all(Pc[k] > (Pc[Dk] + 7)):
             ST.append(k)
 
@@ -59,7 +85,7 @@ def MaskPower(c, ST):
     # For each masker
     for k in range(len(ST)):
 
-        # Get the masker's neighbors and itself
+        # Get the masker's left-right neighbors and itself
         neighbors = np.array([k-1, k, k+1])
 
         # Check if the neighbors exist (within bounds)
@@ -74,6 +100,7 @@ def MaskPower(c, ST):
 
     return PM
 
+# Reduces the tonal components
 def STreduction(ST, c, Tq):
 
     # Get maskers' power
@@ -112,6 +139,7 @@ def STreduction(ST, c, Tq):
 
     return STr, PMr
 
+# Function that defines the spread function
 def SpreadFunc(ST, PM, Kmax):
 
     # Initialize the Sf matrix
@@ -151,7 +179,8 @@ def SpreadFunc(ST, PM, Kmax):
             Sf[i,j] = value
     
     return Sf
-        
+
+# Function that returns the masking thresholds
 def Masking_Thresholds(ST, PM, Kmax):
     
     # Initialize the Ti matrix
@@ -197,11 +226,20 @@ def Global_Masking_Thresholds(Ti, Tq):
 
     return Tg
 
+# Function that performs the psychoacoustic model from start to finish
 def psycho(c, D, Tq):
 
+    # Set the number of discrete frequencies
     Kmax = 1152
     
+    # Get the tonal components and their power
     ST, PM = STreduction(STinit(c, D), c, Tq)
+    
+    # Get the masking thresholds
     Ti = Masking_Thresholds(ST, PM, Kmax)
+
+    # And the global masking thresholds
     Tg = Global_Masking_Thresholds(Ti, Tq)
+
+    # And return the global masking thresholds
     return Tg

@@ -1,8 +1,20 @@
+# MULTIMEDIA SYSTEMS, ECE AUTH 2022-2023
+# KOUTROUMPIS GEORGIOS, 9668
+# KYRGIAFINI-AGGELI DIMITRA, 9685
+# 
+# quantization.py
+#
+# This file contains the functions for the quantizer and dequantizer
+
+# Imports
 import numpy as np
 from .helper import discrete2Hz
 
+# This function groups each discrete frequency [0, ..., K-1], to a critical band
+# according to the given table
 def critical_bands(K):
     
+    # Initialize an array that holds each frequency's critibal band
     cb = np.zeros(K)
 
     # Get upper limits for each band
@@ -13,25 +25,24 @@ def critical_bands(K):
     # Initialize a counter showing which band is currently active
     current_band = 0
     
+    # For each frequency
     for k in range(K):
         
         # Get frequency from discrete freq
         f = discrete2Hz(k)
 
         # If f is greater than the current band's limit
-        # increase the current band number
+        # increase the current band number (do not increase if the last band is reached)
         
         if current_band < 24 and f > upper_limits[current_band]:
             current_band = min(current_band+1, 24)
 
         # Set the kth band
         cb[k] = current_band
-    
-    # Plus one as it was zero indexed, and bands
-    # are one indexed
 
     return cb
 
+# Function that scales the DCT coefficients as described in the project
 def DCT_band_scale(c):
 
     # Get number of coefficients
@@ -60,6 +71,7 @@ def DCT_band_scale(c):
 
     return cs, sc
 
+# Function that implements a dead-zone quantizer, using @b bits
 def quantizer(x, b):
     
     # Split [-1,1] 2^b + 1 zones
@@ -96,6 +108,7 @@ def quantizer(x, b):
 
     return symb_index
 
+# Function that dequantizes the quantized symbols, that were produced using the quantizer function
 def dequantizer(symb_index, b):
 
     # Find decision boundaries, like in the quantizer
@@ -113,24 +126,32 @@ def dequantizer(symb_index, b):
     
     return xh
 
+# Function that performs quantization for the coefficients of each band, while also finding the 
+# best number of bits to use for each band, according to @Tg
 def all_bands_quantizer(c, Tg):
 
+    # The number of coefficients (in this implementation, always 1152)
     K = len(c)
 
+    # Array that holds the critical band that each discrete freq belongs to
     cb = critical_bands(K)
 
+    # The scaled coeffiecnts and scaling factors, as calculate from DCT_band_scale
     cs, SF = DCT_band_scale(c)
 
+    # Initialize an arrya for the quantized symbols
     symb_index = np.zeros(K)
 
+    # Initialize an array that holds the number of bits used for the quantization
+    # of each band
     B = np.zeros(len(cb))
 
+    # For each band
     for band in range(25):
         
-        # Get coefficients of this band
+        # Get coefficients belonging to this band
         idx = cb == band
 
-        
         # Get c values of this band
         c_band = c[idx]
         
@@ -147,7 +168,7 @@ def all_bands_quantizer(c, Tg):
 
         symb_idx = []
 
-        # Continue while Pb is higher than the threshold
+        # Continue while Pb is higher than the threshold, increasing @b each time
         while np.any(Pb > Tgb):
             
             b += 1
@@ -176,19 +197,25 @@ def all_bands_quantizer(c, Tg):
 
     return symb_index, SF, B.astype(int)
 
+# Function that dequantizes the quantized symbols
 def all_bands_dequantizer(symb_index, B, SF):
     
+    # The number of coefficients (in this implementation, always 1152)
     K = len(symb_index)
-
+    
+    # Array that holds the critical band that each discrete freq belongs to
     cb = critical_bands(K)
     
+    # Initialize array that will hold the dequantized symbols
     xhat = np.zeros(K)
 
+    # For each band
     for band in range(25):
         
         # Get coefficients of this band
         idx = cb == band
 
+        # Get bits used in this band
         b = B[band]
 
         # Get symbol indices
@@ -197,7 +224,9 @@ def all_bands_dequantizer(symb_index, B, SF):
         # Get dequantized c_tilde values
         c_d = dequantizer(symb_idx, b)
         
-        # Get c_hat
+        # Get c_hat.NOTE: the absolute value of @c_d is used, to avoid RunTime warnings.
+        # After all, since the exponent is 4/3 the sign does not matter in the final result.
+        # (It is considered using the np.sign() function any way)
         c_hat = np.sign(c_d) * np.power(np.abs(c_d) * SF[band], 4/3) 
 
         xhat[idx] = c_hat
