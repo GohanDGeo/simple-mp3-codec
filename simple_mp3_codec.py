@@ -8,13 +8,13 @@
 
 # Imports
 import numpy as np
-from . import mp3
-from . import frame
-from .dct import *
-from .quantization import *
-from .rle import *
-from .huffman import *
-from .psychoacoustic import *
+import mp3
+import frame
+from dct import *
+from quantization import *
+from rle import *
+from huffman import *
+from psychoacoustic import *
 
 # Performs the encoding step for a given wav file
 def MP3cod(wavin, h, M, N):

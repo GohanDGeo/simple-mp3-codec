@@ -10,9 +10,9 @@
 
 # Imports
 import numpy as np
-from . import mp3
-from . import frame
-from . import nothing
+import mp3
+import frame
+import nothing
 
 # Performs the analysis step for a given wav file
 def coder(wavin, h, M, N):

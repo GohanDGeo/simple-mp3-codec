@@ -11,8 +11,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.io import wavfile
-from src.simple_mp3_codec import MP3codec
-from src.helper import compression_ratio
+from simple_mp3_codec import MP3codec
+from helper import compression_ratio
 
 # Load and define the required information for the filterbank
 h = np.load("h.npy", allow_pickle=True).tolist()['h'].reshape(-1, )

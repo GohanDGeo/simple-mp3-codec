@@ -8,7 +8,7 @@
 
 # Imports
 import numpy as np
-from .helper import discrete2Hz
+from helper import discrete2Hz
 
 # This function groups each discrete frequency [0, ..., K-1], to a critical band
 # according to the given table
