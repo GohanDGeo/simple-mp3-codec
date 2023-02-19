@@ -69,8 +69,8 @@ def STinit(c, D):
         # Get the other neighbors, according to Dk
         Dk = np.nonzero(D[k,:])
 
-        # And check if either condition is true
-        if np.all(Pc[k] > Pc[neighbors]) or np.all(Pc[k] > (Pc[Dk] + 7)):
+        # And check if its magnitude is the local maxima according to the given conditions
+        if np.all(Pc[k] > Pc[neighbors]) and np.all(Pc[k] > (Pc[Dk] + 7)):
             ST.append(k)
 
     ST = np.asarray(ST)
