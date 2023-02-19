@@ -10,7 +10,7 @@
 import numpy as np
 
 # Given a series of symbols @symb_index, perform run-length encoding
-def RLE(symb_index):
+def RLE(symb_index, K):
 
     # Initialize the count 
     count = 0
@@ -40,7 +40,11 @@ def RLE(symb_index):
     # This is OK, since during decoding the run-length encoding, the information of the lenght of the original
     # array is known. So the left over symbols are set to 0.
     # Eg. [0 0 0 1 2 0 0 0 0 0 3 0 0 0 0] will be encoded as [(3,1) (0,2) (5,3)], ignoring the last four 0s
-    # as they can be retrieved knowing the run symbols and the length of the original array of symbols. 
+    # as they can be retrieved knowing the run symbols and the length of the original array of symbols.
+
+    # If however @symb_index consists only of 0s, one symbol will be produced, in the form of (0, @(K-1))
+    if len(run_symbols) == 0:
+        run_symbols = [(0, K - 1)]
     return run_symbols
 
 # Given the run-length encoding symbols, and the length of the original symbol array, 

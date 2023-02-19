@@ -73,13 +73,14 @@ def MP3cod(wavin, h, M, N):
         # Apply the psychoacoustic model, and move it by 20
         # 20 was found with listening tests, while keeping a decent
         # compression ratio
-        Tg = psycho(Yc, D, Tq) - 20
+        displacement = 20
+        Tg = psycho(Yc, D, Tq) - displacement
 
         # Quantize the coefficients
         symb_index, SF, B = all_bands_quantizer(Yc, Tg) 
 
         # Perform RLE encoding
-        run_symbols = RLE(symb_index)
+        run_symbols = RLE(symb_index, frame_size)
 
         # Perform huffman encoding
         frame_stream, frame_symbol_prob = huff(run_symbols)
